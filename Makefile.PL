@@ -1,0 +1,13 @@
+use ExtUtils::MakeMaker;
+
+WriteMakefile(
+	'NAME'		=> 'File::DirWalk',
+	'VERSION_FROM'	=> 'DirWalk.pm',
+	'PREREQ_PM'	=> {
+		'File::Basename' => 0,
+	}, 
+	($] >= 5.005
+		? (AUTHOR     => 'Jens Luedicke <jens.luedicke@gmail.com>') 
+		: ()
+	),
+);
