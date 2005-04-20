@@ -1,15 +1,16 @@
-# Copyright (c) 2005 Jens Luedicke. All rights reserved.
+# Copyright (c) 2005 Jens Luedicke <jensl@cpan.org>. All rights reserved.
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
 package File::DirWalk;
 
-our $VERSION = '0.1';
+our $VERSION = '0.2';
 
 use strict;
 use warnings;
 
 use File::Basename;
+use File::Spec;
 
 use constant FAILED => 0;
 use constant SUCCESS => 1;
@@ -75,21 +76,27 @@ sub walk {
 			return $r;
 		}
 
-		opendir(DIR, $path) || return FAILED;
+		my $dirh; 
 
-		foreach my $f (readdir(DIR)) {
+		opendir($dirh, $path) || return FAILED;
+
+		foreach my $f (readdir($dirh)) {
 			next if ($f eq "." or $f eq "..");
 
-			if ((my $r = &{$self->{onForEach}}("$path/$f")) != SUCCESS) {
+			# be portable.
+			my @dirs = File::Spec->splitdir($path);
+			my $path = File::Spec->catfile(@dirs, $f);
+
+			if ((my $r = &{$self->{onForEach}}($path)) != SUCCESS) {
 				return $r;
 			}
 
-			if ((my $r = $self->walk("$path/$f")) != SUCCESS) {
+			if ((my $r = $self->walk($path)) != SUCCESS) {
 				return $r;
 			}
 		}
 
-		closedir(DIR);
+		closedir($dirh);
 
 		if ((my $r = &{$self->{onDirLeave}}($path)) != SUCCESS) {
 			return $r;
@@ -111,15 +118,14 @@ File::DirWalk - walk through a directory tree and run own code
 
 =head1 SYNOPSIS
 
-Walk through your homedir and print out all filenames. 
+Walk through your homedir and print out all filenames:
 
 	use File::DirWalk;
-	
-	my $dw = new File::DirWalk;
-	$dw->onFile(sub {
-		print $_[0], "\n";
-		return File::DirWalk::SUCCESS;
-	});
+
+	my $dw = new File::DirWalk; $dw->onFile(sub { my ($file) = @_; print
+	"$file\n";
+
+		return File::DirWalk::SUCCESS; });
 
 	$dw->walk($ENV{'HOME'});
 
@@ -138,29 +144,49 @@ Create a new File::DirWalk object
 
 =item C<onBeginWalk(\&func)>
 
+Specify a function to be be run on beginning of a walk. It is called each time
+the C<walk> method is called. The directory-name is passed to the given
+function. Function must return true.
+
 =item C<onLink(\&func)>
+
+Specify a function to be run on symlinks. The symlink-filename is passed to the
+given function. Function must return true.
 
 =item C<onFile(\&func)>
 
+Specify a function to be run on regular files. The filename is passed to the
+given function when called. Function must return true.
+
 =item C<onDirEnter(\&func)>
+
+Specify a function to be run before entering a directory. The directory-name is
+passed to the given function when called. Function must return true.
 
 =item C<onDirLeave(\&func)>
 
+Specify a function to be run on leaving directory. The directory-name is passed
+to the given function when called. Function must return true.
+
 =item C<onForEach(\&func)>
 
-All methods expect a function reference as their callbacks. The function must
-return true, otherwise the recursive walk is aborted and C<walk> returns.
-You don't need to define a callback if you don't need to. 
+Specify a function to be run on each file/directory within another directory.
+The name is passed to the function when called. Function must return true.
 
 =item C<walk($path)>
 
-Begin the walk through the given directory tree. This module returns if the walk
-is finished or if one of the callbacks doesn't return true.
+Begin the walk through the given directory tree. This method returns if the walk
+is finished or if one of the callbacks doesn't return true. 
 
 =back
 
-The module provides the following constants SUCCESS, FAILED and ABORTED (1, 0 and -1)
-which you can use within your callback code. 
+All callback-methods expect a function reference as their argument. The
+directory- or filename  is passed to the function as the argument when called.
+The function must return true, otherwise the recursive walk is aborted and
+C<walk> returns. You don't need to define a callback if you don't need to. 
+
+The module provides the following constants: SUCCESS, FAILED and ABORTED (1, 0
+and -1) which you can use within your callback code. 
 
 =head1 BUGS
 
@@ -168,8 +194,22 @@ Please mail the author if you encounter any bugs.
 
 =head1 AUTHOR
 
-Jens Luedicke E<lt>jensl@cpan.orgE<gt>
+Jens Luedicke E<lt>jensl@cpan.orgE<gt> web: L<http://perldude.de/>
 
-Copyright (c) 2005 Jens Luedicke. All rights reserved.
-This program is free software; you can redistribute it and/or
-modify it under the same terms as Perl itself.
+=head1 CHANGES
+
+Version 0.2: platform portability fixes and more documentation
+
+Version 0.1: first CPAN release
+
+=head1 HISTORY
+
+I wrote DirWalk.pm module for use within my 'Filer' file manager as a directory
+traversing backend and I thought it might be useful for others. It is my first
+CPAN module.
+
+=head1 COPYRIGHT AND LICENCE
+
+Copyright (c) 2005 Jens Luedicke. All rights reserved. This program is free
+software; you can redistribute it and/or modify it under the same terms as Perl
+itself.

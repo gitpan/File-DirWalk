@@ -5,9 +5,10 @@ WriteMakefile(
 	'VERSION_FROM'	=> 'DirWalk.pm',
 	'PREREQ_PM'	=> {
 		'File::Basename' => 0,
+		'File::Spec' => 0,
 	}, 
 	($] >= 5.005
-		? (AUTHOR     => 'Jens Luedicke <jens.luedicke@gmail.com>') 
+		? (AUTHOR     => 'Jens Luedicke <jensl@cpan.org>') 
 		: ()
 	),
 );
