@@ -1,12 +1,26 @@
-# http://module-build.sourceforge.net/META-spec.html
-#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
-name:         File-DirWalk
-version:      0.3
-version_from: DirWalk.pm
-installdirs:  site
+---
+abstract: "walk through a directory tree and run callbacks\non files, symlinks and directories."
+author:
+  - 'Jens Luedicke E<lt>jensl@cpan.orgE<gt>'
+configure_requires:
+  Module::Build: 0.36
+generated_by: 'Module::Build version 0.3603'
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: File-DirWalk
+provides:
+  File::DirWalk:
+    file: lib/File/DirWalk.pm
+    version: 0.4
+recommends:
+  Test::Exception: 0.27
+  Test::More: 0.72
 requires:
-    File::Basename:                0
-    File::Spec:                    0
-
-distribution_type: module
-generated_by: ExtUtils::MakeMaker version 6.30
+  Carp: 1.08
+  File::Basename: 2.76
+  File::Spec: 3.2501
+resources:
+  license: http://dev.perl.org/licenses/
+version: 0.4
