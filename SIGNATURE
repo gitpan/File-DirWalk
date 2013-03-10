@@ -1,5 +1,5 @@
 This file contains message digests of all files listed in MANIFEST,
-signed via the Module::Signature module, version 0.68.
+signed via the Module::Signature module, version 0.70.
 
 To verify the content in this distribution, first make sure you have
 Module::Signature installed, then type:
@@ -14,23 +14,79 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 05f12f06753799dbd2169e81f4cf9d53ddec7e77 MANIFEST
-SHA1 52e7bd3c2871bf988202a99ffe18f54288c80df8 META.yml
-SHA1 e4df75bddedbe6de2ba3ceb4b3ab173e933d52a9 Makefile.PL
-SHA1 635356b739f841086a9c198798a7725d970ad325 README
-SHA1 1f97d915dfc26eede6571bcf78542a517c51bb3c examples/find-perl-binary.pl
-SHA1 b2d991975e6cda0116488c91934911351f72307b examples/ls.pl
-SHA1 735018a36057632246abad576cfd67f1296f3e67 lib/File/DirWalk.pm
-SHA1 08284373f9e6347b2665e2970d55195b9d5d1754 t/1.t
+SHA1 be0627fff2e8aef3d2a14d5d7486babc8a4873ba Artistic.txt
+SHA1 afc5520176057a1c4c850ad8f82046d521963839 Build.PL
+SHA1 c0bf1a619a3a61a05da7ec8a9845e48fa4511c97 Copying.txt
+SHA1 bdc0148603eaa3b0957672982d1ab7f43e4947ad MANIFEST
+SHA1 54046192eb261394cf58f82a19eefb1e3754db58 MANIFEST.SKIP
+SHA1 70ecd995d5eb4ea5f0e21d65ab917610c205f71d META.yml
+SHA1 cf51105a464076a736ab82934abfbc3e7048d4a7 README
+SHA1 a28fa1ad50c6304975cf7ec4ba4f34502ec1eacf examples/find-perl-binary.pl
+SHA1 077383125ea94a889c913726560c69e838c54907 examples/ls.pl
+SHA1 118f52f24dba871fa290253a760e53d3d72bce81 lib/File/DirWalk.pm
+SHA1 c05cbc496639af4f714a9c45b73b483745192990 t/1.t
+SHA1 0bd1207486b40516dd8b13e15db234ab5e069954 t/2.t
+SHA1 db606a6a22e3eeb402b841f98dcc3ce4d3a3f0ac t/3.t
+SHA1 d19dc413492545f64e2f4a92ffd19c566ce2f62e t/4.t
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir1/file0
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir1/file1
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir1/file2
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir1/file3
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir1/file4
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir1/file5
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir1/file6
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir1/file7
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir1/file8
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir1/file9
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir2/file0
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir2/file1
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir2/file2
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir2/file3
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir2/file4
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir2/file5
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir2/file6
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir2/file7
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir2/file8
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir2/file9
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir3/file0
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir3/file1
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir3/file2
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir3/file3
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir3/file4
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir3/file5
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir3/file6
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir3/file7
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir3/file8
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir3/file9
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir4/file0
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir4/file1
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir4/file2
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir4/file3
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir4/file4
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir4/file5
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir4/file6
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir4/file7
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir4/file8
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir4/file9
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir5/file0
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir5/file1
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir5/file2
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir5/file3
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir5/file4
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir5/file5
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir5/file6
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir5/file7
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir5/file8
+SHA1 da39a3ee5e6b4b0d3255bfef95601890afd80709 t/tree/dir5/file9
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (Darwin)
+Version: GnuPG v1.4.13 (Darwin)
 Comment: GPGTools - http://gpgtools.org
 
-iQEcBAEBAgAGBQJQQg3UAAoJEPFZu/9GrBiL1iwH/jQK8QNju/Jd7oLnWRorlTXj
-C0FYhA4GFIGBJcfJJFpIvBsiWxzFKA2mth3tgojngEPCJJquRyZfltp0pkDrPiYB
-pnsThlbgnOi3TwV6ehWbmsqYhQWZHPxKELjbEePE/PLSSvbJtUbLNaPTyMboomGZ
-6d6Gn83lZIL0bt1grvhC9Rt7RnRWQy5fM4CT6qdFDUWxy9MAUynBF6NsvHUwYK+T
-NwOW7xRvXVr1L/4SPxzKmD/VGwYGiDn/vsB619GvX9a0/Tv/2E2e8eiq7syJcU1J
-lWxsGXkhBegcNOHI8bARp4qbCnJIN2AYufUGsrg3KuEbWa50pO6v0/AGahMnnXo=
-=iZsW
+iQEcBAEBAgAGBQJRPL9PAAoJEPFZu/9GrBiLFOUIALmBRBzwnlv4sryrkJb5jnIo
++F2uL8m25V06YC4ly1yfwds6aAfBa/6aBnWfEAWGt35stBl5uyfymYym6p89Fpv6
+WofKub1C7ZD0Tz0bRRIts+HEGfLk21/5B4+XorRRbGEIULXvoVj5ew8evasV1VHa
+pkfpqvYmnEUFcjo7ZcoWdoyePA5TkraHZc8xVCBJaykNEkzkvC2tCw+hRy4GMws7
+fKnULiRT1ppr9gq7To/2lyCLG/ixV9UCbO5XRg+dt4kXKv/qQya6E352J5leghXJ
+eW9SYd9AtxfNFYYLQBpHk122eS1AEqCl1OEW9R0k1qaBvzTMlx2BT15bmCqMu+g=
+=Alpr
 -----END PGP SIGNATURE-----

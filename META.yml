@@ -13,14 +13,13 @@ name: File-DirWalk
 provides:
   File::DirWalk:
     file: lib/File/DirWalk.pm
-    version: 0.4
-recommends:
-  Test::Exception: 0.27
-  Test::More: 0.72
+    version: 0.5
 requires:
   Carp: 1.08
   File::Basename: 2.76
   File::Spec: 3.2501
+  Test::Exception: 0.27
+  Test::More: 0.72
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.4
+version: 0.5

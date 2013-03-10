@@ -1,6 +1,6 @@
-# Copyright (c) 2005-2012 Jens Luedicke <jensl@cpan.org>.
-# 
-# This module is free software; you can redistribute it and/or modify 
+# Copyright (c) 2005-2013 Jens Luedicke <jensl@cpan.org>.
+#
+# This module is free software; you can redistribute it and/or modify
 # it under the same terms as Perl 5.10.0. For more details, see the
 # full text of the licenses in the directory LICENSES.
 
@@ -11,7 +11,7 @@
 package File::DirWalk;
 use base qw(Exporter);
 
-our $VERSION = '0.4';
+our $VERSION = '0.5';
 our @EXPORT = qw(FAILED SUCCESS ABORTED PRUNE);
 
 use warnings;
@@ -19,163 +19,181 @@ use strict;
 use Carp;
 
 use File::Basename;
-use File::Spec;
+use File::Spec::Functions qw(no_upwards splitdir catfile);
 
-use constant SUCCESS 	=> 1;
-use constant FAILED 	=> 0;
-use constant ABORTED 	=> -1;
-use constant PRUNE 	=> -10;
+use constant SUCCESS    => 1;
+use constant FAILED     => 0;
+use constant ABORTED    => -1;
+use constant PRUNE      => -10;
 
 sub new {
-	my ($class) = @_;
-	my $self = bless {}, $class;
+    my ($class) = @_;
+    my $self = bless {}, $class;
 
-	$self->{onBeginWalk} = sub { SUCCESS };
-	$self->{onLink}      = sub { SUCCESS };
-	$self->{onFile}      = sub { SUCCESS };
-	$self->{onDirEnter}  = sub { SUCCESS };
-	$self->{onDirLeave}  = sub { SUCCESS };
+    foreach my $action (qw/onBeginWalk onLink onFile onDirEnter onDirLeave/) {
+        $self->{$action} = sub { SUCCESS };
+    }
 
-	$self->{depth}       = 0;
-	$self->{depth_count} = 0;
+    $self->{depth}         = 0;
+    $self->{currentDepth}  = 0;
 
-	$self->{filesInDir}  = 0;
+    $self->{entryList}   = [];
+    $self->{count}       = 0;
 
-# 	$self->{customResponse} = {};
-
-	return $self;
+    return $self;
 }
 
 sub setHandler {
-	my ($self,$action,$func) = @_;
-    
-	if (ref($func) ne 'CODE') {
-    	croak("Second argument must be CODE reference.");
-	}
+    my ($self,$action,$func) = @_;
+
+    if (not exists $self->{$action}) {
+        croak("Invalid action argument: $action");
+    }
+
+    if (ref($func) ne 'CODE') {
+        croak("Second argument must be CODE reference.");
+    }
 
     $self->{$action} = $func;
 }
 
 sub onBeginWalk {
-	my ($self,$func) = @_;
-	$self->setHandler(onBeginWalk => $func);
+    my ($self,$func) = @_;
+    $self->setHandler(onBeginWalk => $func);
 }
 
 sub onLink {
-	my ($self,$func) = @_;
-	$self->setHandler(onLink => $func);
+    my ($self,$func) = @_;
+    $self->setHandler(onLink => $func);
 }
 
 sub onFile {
-	my ($self,$func) = @_;
-	$self->setHandler(onFile => $func);
+    my ($self,$func) = @_;
+    $self->setHandler(onFile => $func);
 }
 
 sub onDirEnter {
-	my ($self,$func) = @_;
-	$self->setHandler(onDirEnter => $func);
+    my ($self,$func) = @_;
+    $self->setHandler(onDirEnter => $func);
 }
 
 sub onDirLeave {
-	my ($self,$func) = @_;
-	$self->setHandler(onDirLeave => $func);
+    my ($self,$func) = @_;
+    $self->setHandler(onDirLeave => $func);
 }
 
 sub setDepth {
-	my ($self,$v) = @_;
-	$self->{depth} = $v;
+    my ($self,$v) = @_;
+    if ($v < 0) {
+        croak("Directory depth is negative: $v");
+    }
+
+    $self->{depth} = $v;
 }
 
 sub getDepth {
-	my ($self) = @_;
-	return $self->{depth_count};
+    my ($self) = @_;
+    return $self->{depth};
+}
+
+sub currentDepth {
+    my ($self) = @_;
+    return $self->{currentDepth};
 }
 
 sub currentDir {
-	my ($self) = @_;
-	return $self->{currentDir};
+    my ($self) = @_;
+    return $self->{currentDir};
 }
 
 sub currentPath {
-	my ($self) = @_;
-	return $self->{currentPath};
+    my ($self) = @_;
+    return $self->{currentPath};
 }
 
 sub currentBasename {
-	my ($self) = @_;
-	return $self->{currentBasename};
+    my ($self) = @_;
+    return $self->{currentBasename};
 }
 
-sub filesInDir {
-	my ($self) = @_;
-	return $self->{filesInDir};
+sub count {
+    my ($self) = @_;
+    return $self->{count};
+}
+
+sub entryList {
+    my ($self) = @_;
+    return $self->{entryList};
 }
 
 sub walk {
-	my ($self,$path) = @_;
+    my ($self,$path) = @_;
 
-	$self->{currentDir}      = dirname($path);
-	$self->{currentBasename} = basename($path);
-	$self->{currentPath}     = $path;
+    my $currentDir      = dirname($path);
+    my $currentBasename = basename($path);
+    my $currentPath     = $path;
 
-	if ((my $r = $self->{onBeginWalk}->($path)) != SUCCESS) {
-		return $r;
-	}
+    $self->{currentDir}      = $currentDir;
+    $self->{currentBasename} = $currentBasename;
+    $self->{currentPath}     = $path;
 
-	if (-l $path) {
+    if ((my $r = $self->{onBeginWalk}->($path)) != SUCCESS) {
+        return $r;
+    }
 
-		if ((my $r = $self->{onLink}->($path)) != SUCCESS) {
-			return $r;
-		}
+    if (-l $path) {
 
-	} elsif (-d $path) {
+        if ((my $r = $self->{onLink}->($path)) != SUCCESS) {
+            return $r;
+        }
 
-		if ($self->{depth} != 0) {
-			if ($self->{depth_count} == $self->{depth}) {
-				return SUCCESS;
-			}
-		}
+    } elsif (-d $path) {
 
-		opendir my $dirh, $path || return FAILED;
-		my @dir_contents = readdir $dirh;
-		@dir_contents    = File::Spec->no_upwards(@dir_contents);
+        if (($self->{depth} > 0) and ($self->{currentDepth} == $self->{depth})) {
+            return SUCCESS;
+        }
 
-		$self->{filesInDir} = scalar @dir_contents;
+        opendir (my $dirh, $path) || return FAILED;
+        $self->{entryList}    = [ no_upwards(readdir $dirh) ];
+        $self->{count}        = scalar @{$self->{entryList}};
 
-		if ((my $r = $self->{onDirEnter}->($path)) != SUCCESS) {
-			return $r;
-		}
-		++$self->{depth_count};
+        ++$self->{currentDepth};
+        if ((my $r = $self->{onDirEnter}->($path)) != SUCCESS) {
+            return $r;
+        }
 
-		# be portable.
-		my @dirs = File::Spec->splitdir($path);
+        # be portable.
+        my @dirs = splitdir($path);
+        foreach my $f (@{$self->{entryList}}) {
+            # be portable.
+            my $path = catfile(@dirs, $f);
 
-		foreach my $f (@dir_contents) {
-			# be portable.
-			my $path = File::Spec->catfile(@dirs, $f);
+            my $r = $self->walk($path);
 
-			my $r = $self->walk($path);
+            if ($r == PRUNE) {
+                next;
+            } elsif ($r != SUCCESS) {
+                return $r;
+            }
+        }
 
-			if ($r == PRUNE) {
-				next;
-			} elsif ($r != SUCCESS) {
-				return $r;
-			}
-		}
+        closedir $dirh;
 
-		closedir $dirh;
+        $self->{currentDir}      = $currentDir;
+        $self->{currentBasename} = $currentBasename;
+        $self->{currentPath}     = $path;
 
-		if ((my $r = $self->{onDirLeave}->($path)) != SUCCESS) {
-			return $r;
-		}
-		--$self->{depth_count};
-	} else {
-		if ((my $r = $self->{onFile}->($path)) != SUCCESS) {
-			return $r;
-		}
-	}
+        if ((my $r = $self->{onDirLeave}->($path)) != SUCCESS) {
+            return $r;
+        }
+        --$self->{currentDepth};
+    } else {
+        if ((my $r = $self->{onFile}->($path)) != SUCCESS) {
+            return $r;
+        }
+    }
 
-	return SUCCESS;
+    return SUCCESS;
 }
 
 1;
@@ -264,10 +282,16 @@ Specify a function to be run when leaving a directory.
 
 Set the directory traversal depth. Once the specified directory depth
 has been reached, the C<walk> method returns. The default value is 0.
+Precondition: The value has to be positive. The method will die
+if called with a negative value.
 
 =item getDepth
 
-Returns the directory traversal depth.
+Returns the user-specified directory traversal depth. The default value is 0.
+
+=item currentDepth
+
+Returns the current directory traversal depth.
 
 =item currentDir
 
@@ -309,9 +333,14 @@ Returns the current base name of the current path:
         return SUCCESS;
     });
 
-=item filesInDir
+=item count
 
-Returns the number of files wthin the current directory.
+Returns the number of elements wthin the current directory.
+Excludes . and ..
+
+=item entryList
+
+Returns an array reference to the elements wthin the current directory.
 Excludes . and ..
 
 =item walk($path)
@@ -319,23 +348,23 @@ Excludes . and ..
 Begin the walk through the given directory tree. This method returns if the walk
 is finished or if one of the callbacks doesn't return SUCCESS. If the callback function
 returns PRUNE, C<walk> will skip to the next element within the current directory
-hierarchy. You can use PRUNE to exclude files or folders: 
+hierarchy. You can use PRUNE to exclude files or folders:
 
-	$dw->onBeginWalk(sub {
-    	my ($path) = @_;
+    $dw->onBeginWalk(sub {
+        my ($path) = @_;
 
-		if ($path =~ /ignore/) {
-			return PRUNE;
-		}
+        if ($path =~ /ignore/) {
+            return PRUNE;
+        }
 
-		return SUCCESS;
-	});
+        return SUCCESS;
+    });
 
 =back
 
 =head1 CALLBACKS
 
-All callback-methods expect a function reference as their argument. 
+All callback-methods expect a function reference as their argument.
 The current path is passed to the callback function.
 
 The callback function must return SUCCESS, otherwise the recursive walk is aborted and
@@ -358,11 +387,14 @@ as return values:
 
 =back
 
-=head1 BUGS
+=head1 DEVELOPMENT
 
-Please mail the author if you encounter any bugs.
+Please mail the author if you encounter any bugs. The most recent development
+version can be found on GitHub: L<https://github.com/nullmedium/File-DirWalk>
 
 =head1 CHANGES
+
+Version 0.5: bugfixes, improved testing, new currentDepth() method.
 
 Version 0.4: add more methods, better testing, more documentation.
 
@@ -384,9 +416,9 @@ Jens Luedicke E<lt>jensl@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENCE
 
-Copyright (c) 2005-2012 Jens Luedicke <jensl@cpan.org>.
+Copyright (c) 2005-2013 Jens Luedicke <jensl@cpan.org>.
 
-This module is free software; you can redistribute it and/or modify 
+This module is free software; you can redistribute it and/or modify
 it under the same terms as Perl 5.10.0. For more details, see the
 full text of the licenses in the directory LICENSES.
 
